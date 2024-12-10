@@ -1,0 +1,25 @@
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo_tp
+    ports:
+    - "27017:27017"
+
+    restart: always
+
+    volumes:
+      - "./data_mongo:/data/db"
+  neo4j:
+    image: neo4j:latest
+    environment:
+        - NEO4J_AUTH=neo4j/password
+    ports:
+        - "7474:7474"
+        - "7687:7687"
+    restart: always
+    container_name: neo_tp
+    volumes:
+        - "./logs_neo4j:/logs"
+        - "./config_neo4j:/config"
+        - "./data_neo4j:/data"
+        - "./plugins_neo4j:/plugins"

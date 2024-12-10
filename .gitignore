@@ -1,0 +1,5 @@
+/docker/data_mongo
+/docker/config_neo4j
+/docker/data_neo4j
+/docker/logs_neo4j
+/docker/plugins_neo4j
