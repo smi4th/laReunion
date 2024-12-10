@@ -1,25 +1,57 @@
 services:
   mongo:
     image: mongo:latest
+    ports:
+      - "27017:27017"
+    restart: always
     container_name: mongo_tp
-    ports:
-    - "27017:27017"
-
-    restart: always
-
     volumes:
-      - "./data_mongo:/data/db"
-  neo4j:
-    image: neo4j:latest
+      - "./logs_mongo:/logs"
+      - "./data_mongo:/data"
+      - "./config_mongo:/config"
+
     environment:
-        - NEO4J_AUTH=neo4j/password
-    ports:
-        - "7474:7474"
-        - "7687:7687"
-    restart: always
-    container_name: neo_tp
-    volumes:
-        - "./logs_neo4j:/logs"
-        - "./config_neo4j:/config"
-        - "./data_neo4j:/data"
-        - "./plugins_neo4j:/plugins"
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: reunion
+
+    networks:
+      - tp_network
+
+  python:
+    container_name: python_tp
+    build:
+      context: ../python
+      dockerfile: Dockerfile
+
+    depends_on:
+      - mongo
+    
+    environment:
+      DB_HOST: mongo
+      DB_PORT: 27017
+      DB_NAME: reunion
+      DB_USER: root
+      DB_PASS: password
+    
+    networks:
+      - tp_network
+
+  # neo4j:
+  #   image: neo4j:latest
+  #   environment:
+  #       - NEO4J_AUTH=neo4j/password
+  #   ports:
+  #       - "7474:7474"
+  #       - "7687:7687"
+  #   restart: always
+  #   container_name: neo_tp
+  #   volumes:
+  #       - "./logs_neo4j:/logs"
+  #       - "./config_neo4j:/config"
+  #       - "./data_neo4j:/data"
+  #       - "./plugins_neo4j:/plugins"
+
+networks:
+  tp_network:
+    driver: bridge
